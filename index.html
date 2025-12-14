@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fulfill Timer</title>
+    <title>Fulfill Counter</title>
     <!-- Add favicon link -->
     <link rel="icon" type="image/png" href="favicon.png">
     
@@ -131,7 +131,7 @@
         <div class="detailed-grid">
             <div class="time-unit">
                 <span id="years" class="unit-value">0</span>
-                <span class="unit-label">Years</span>
+                <span id="months" class="unit-label">Years</span>
             </div>
             <div class="time-unit">
                 <span id="months" class="unit-value">0</span>
@@ -163,8 +163,9 @@
     <script>
         // --- CONFIGURATION ---
         // Immutable Start Date. 
-        // Updated to: 2025-12-14 20:57:00 (Current Moment)
-        const START_DATE = new Date("2025-12-14T20:57:00"); 
+        // CHANGED: Set to the start of the next calendar day (2025-12-15 00:00:00).
+        // This ensures the main day count synchronizes with midnight roll-over.
+        const START_DATE = new Date("2025-12-15T00:00:00"); 
 
         function updateCounter() {
             const now = new Date();
