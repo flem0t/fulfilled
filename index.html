@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Counter</title>
+    <!-- Add favicon link -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- Importing JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #212121;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace; /* Global font update */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            animation: fadeIn 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Main Day Counter */
+        .day-display {
+            margin-bottom: 4rem;
+        }
+
+        .day-count {
+            font-size: 9rem; /* Slightly larger for monospace impact */
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(180deg, #ffffff 0%, #757575 100%);
+            
+            /* FIX: Ensure compatibility by including the standard property */
+            -webkit-background-clip: text;
+            background-clip: text; 
+            
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.05em;
+        }
+
+        .day-label {
+            font-size: 1.1rem;
+            color: #616161;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin-top: 1.5rem;
+            font-weight: 400;
+        }
+
+        /* Detailed Counter */
+        .detailed-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.2rem 1rem;
+            border-radius: 8px; /* Sharper corners for mono look */
+            min-width: 90px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .time-unit:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .unit-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #eeeeee;
+            margin-bottom: 0.25rem;
+        }
+
+        .unit-label {
+            font-size: 0.65rem;
+            color: #9e9e9e;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .day-count { font-size: 4.5rem; letter-spacing: -0.05em; }
+            .day-label { font-size: 0.9rem; letter-spacing: 0.2em; }
+            .detailed-grid { gap: 0.75rem; }
+            .time-unit { min-width: 70px; padding: 0.8rem 0.5rem; }
+            .unit-value { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="day-display">
+            <div id="main-days" class="day-count">0</div>
+            <div class="day-label">Days Elapsed</div>
+        </div>
+
+        <div class="detailed-grid">
+            <div class="time-unit">
+                <span id="years" class="unit-value">0</span>
+                <span class="unit-label">Years</span>
+            </div>
+            <div class="time-unit">
+                <span id="months" class="unit-value">0</span>
+                <span class="unit-label">Months</span>
+            </div>
+            <div class="time-unit">
+                <span id="weeks" class="unit-value">0</span>
+                <span class="unit-label">Weeks</span>
+            </div>
+            <div class="time-unit">
+                <span id="days" class="unit-value">0</span>
+                <span class="unit-label">Days</span>
+            </div>
+            <div class="time-unit">
+                <span id="hours" class="unit-value">00</span>
+                <span class="unit-label">Hours</span>
+            </div>
+            <div class="time-unit">
+                <span id="minutes" class="unit-value">00</span>
+                <span class="unit-label">Mins</span>
+            </div>
+            <div class="time-unit">
+                <span id="seconds" class="unit-value">00</span>
+                <span class="unit-label">Secs</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // Immutable Start Date. 
+        // Updated to: 2025-12-14 20:57:00 (Current Moment)
+        const START_DATE = new Date("2025-12-14T20:57:00"); 
+
+        function updateCounter() {
+            const now = new Date();
+            let diff = now - START_DATE;
+
+            // Prevent negative countdowns if client system time is slightly behind
+            if (diff < 0) diff = 0;
+
+            // 1. Update Main Day Counter (Total Days elapsed)
+            // Use Math.floor to strictly count full 24h periods completed
+            const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('main-days').textContent = totalDays.toLocaleString();
+
+            // 2. Calculate Detailed Breakdown
+            // Standard arithmetic breakdown (Non-calendar specific for smooth counting)
+            
+            let seconds = Math.floor(diff / 1000);
+            let minutes = Math.floor(seconds / 60);
+            let hours = Math.floor(minutes / 60);
+            let days = Math.floor(hours / 24);
+
+            const y = Math.floor(days / 365);
+            days %= 365;
+            
+            const m = Math.floor(days / 30); // Standard approximation: 30 days = 1 month
+            days %= 30;
+
+            const w = Math.floor(days / 7);
+            const d = days % 7;
+
+            const h = hours % 24;
+            const min = minutes % 60;
+            const s = seconds % 60;
+
+            // Update DOM with padStart for uniform width
+            document.getElementById('years').textContent = y;
+            document.getElementById('months').textContent = m;
+            document.getElementById('weeks').textContent = w;
+            document.getElementById('days').textContent = d;
+            
+            // Pad time values with leading zeros for that digital clock look
+            document.getElementById('hours').textContent = h.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = min.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = s.toString().padStart(2, '0');
+        }
+
+        // Initialize immediately
+        updateCounter();
+        
+        // Update loop
+        setInterval(updateCounter, 1000);
+    </script>
+</body>
+</html>
